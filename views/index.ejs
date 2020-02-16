@@ -1,0 +1,176 @@
+<%- include ./partials/header.ejs %>
+
+<!-- Container Fluid-->
+<div class="container-fluid" id="container-wrapper">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="./">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+    </ol>
+  </div>
+
+  <div class="row mb-3">
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-12 col-md-12 mb-12">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col mr-2">
+              <div class="form-group" style="width: 50%;">
+                <label for="exampleInputEmail1">IP address</label>
+                <input type="email" class="form-control" id="inputIP" aria-describedby="emailHelp"
+                  placeholder="Enter IP">
+              </div>
+              <button type="button" id="getinfo" class="btn btn-light mb-1">Get info</button>
+              <button type="button" id="gethistory" class="btn btn-info mb-1">Get History</button>
+              <br /> <br>
+              <div id="infoip">
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!--Row-->
+
+
+
+</div>
+<script>
+  jQuery.fn.ForceNumericOnly =
+    function () {
+      return this.each(function () {
+        $(this).keydown(function (e) {
+          var key = e.charCode || e.keyCode || 0;
+          // allow backspace, tab, delete, enter, arrows, numbers and keypad numbers ONLY
+          // home, end, period, and numpad decimal
+          return (
+            key == 8 ||
+            key == 9 ||
+            key == 13 ||
+            key == 46 ||
+            key == 110 ||
+            key == 190 ||
+            (key >= 35 && key <= 40) ||
+            (key >= 48 && key <= 57) ||
+            (key >= 96 && key <= 105));
+        });
+      });
+    };
+  $('#inputIP').ForceNumericOnly();
+</script>
+
+<script>
+  $('#getinfo').click(function () {
+    var ip = $('#inputIP').val();
+    var obj = {
+      ipadd: ip
+    }
+    debugger
+    $.ajax({
+      url: '/getinfo',
+      type: 'POST',
+      data: obj,
+      success: function (res) {
+        debugger
+        console.log(res);
+        if (res) {
+          var html = '';
+          html = `  <h4> IP:</h4> <a id="currentIp">` + $('#inputIP').val() + `</a> 
+                <hr>
+         <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <tbody>
+                      <tr>
+                        <td>Country</td>
+                        <td>` + res.country + `</td>
+                        <td><span class="badge badge-success">Fetched</span></td>
+                      </tr>
+                      <tr>
+                        <td>City</td>
+                        <td>` + res.city + `</td>
+                        <td><span class="badge badge-success">Fetched</span></td>
+                      </tr>
+                      <tr>
+                        <td>Latitue</td>
+                        <td>` + res.ll[0] + `</td>
+                        <td><span class="badge badge-success">Fetched</span></td>
+                      </tr>
+                      <tr>
+                       
+                        <td>Longitude</td>
+                        <td>` + res.ll[1] + `</td>
+                        <td><span class="badge badge-success">Fetched</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="noprint m-b-20" id="mapDetails">
+                        <h3 class="sl-sp-title bd-no">Location</h3>
+                        <div>
+                            <div class="pos-map map" id="map" style="height:250px;"></div>
+                        </div>
+                    </div>
+                  `
+
+                  $('#infoip').html(html);
+          var myLatLng = { lat: res.ll[0], lng: res.ll[1] };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: myLatLng,
+            zoom: 14
+        });
+
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            //title: 'Hello World'
+
+            // setting latitude & longitude as title of the marker
+            // title is shown when you hover over the marker
+            title: latitudes + ', ' + longitudes
+        });
+          
+        }
+      },
+      error: function (error) {
+        debugger
+      }
+    })
+  })
+</script>
+
+<script>
+  $('#gethistory').click(function () {
+    var ip = $('#inputIP').val();
+    location.href = "/history?ipaddress=" + ip;
+  })
+
+  function initMap() {
+
+    var myLatLng = {
+      lat: latitudes,
+      lng: longitudes
+    };
+
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: myLatLng,
+      zoom: 14
+    });
+
+    var marker = new google.maps.Marker({
+      position: myLatLng,
+      map: map,
+      //title: 'Hello World'
+
+      // setting latitude & longitude as title of the marker
+      // title is shown when hover over the marker
+      title: latitudes + ', ' + longitudes
+    });
+  }
+</script>
+<%- include ./partials/footer.ejs %>

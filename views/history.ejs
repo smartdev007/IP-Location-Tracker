@@ -1,0 +1,236 @@
+<%- include ./partials/header.ejs %>
+
+<!-- Container Fluid-->
+<div class="container-fluid" id="container-wrapper">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Filter</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="./">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">History</li>
+        </ol>
+    </div>
+
+    <div class="row mb-3">
+        <label style="margin-top: 7px;">Start Date: </label>
+        <div id="datepicker" class="col-md-2 input-group date" data-date-format="mm-dd-yyyy">
+            <input class="form-control" type="text" readonly />
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <label style="margin-top: 7px;">End Date: </label>
+        <div id="datepicker1" class="col-md-2 input-group date" data-date-format="mm-dd-yyyy">
+            <input class="form-control" type="text" readonly />
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <label style="margin-top: 7px;">Count: </label>
+        <div id="aa" class="col-md-2 input-group">
+            <input id="cout" class="form-control" type="number" />
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <div id="s" class="col-md-3 input-group">
+            <input type="button" id="Filter" style="height:44px" value="submit" class="btn btn-info" />
+
+        </div>
+
+
+        <br><br><br><br>
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-12 col-md-12 mb-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div id="accordion">
+                                <% if (ipinfo){%>
+                                <%ipinfo.forEach(element=>{ %>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center"
+                                        data-toggle="collapse" data-target="#a<%=element._id %>" aria-expanded="false"
+                                        aria-controls="a<%=element._id %>">
+                                        <h6 class="mb-0">
+                                            IP: <%=element.ip%>
+
+                                        </h6>
+                                        <a href="#" class="btn  btn-primary" data-id="<%=element._id%>">
+                                            <%= moment(element.date).format( 'MMM-DD-YYYY mm:ss') %> </a>
+                                    </div>
+
+                                    <div id="a<%=element._id %>" class="collapse " data-parent="#accordion">
+                                        <div class="card-body">
+
+
+
+                                            <div class="card modal-card mb-3">
+
+                                                <div
+                                                    class="card-header d-flex justify-content-between align-items-center">
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+
+                                                        <div class="col-md-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table align-items-center table-flush">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>Country</td>
+                                                                            <td><%=element.country %></td>
+                                                                            <td><span
+                                                                                    class="badge badge-success">Fetched</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>City</td>
+                                                                            <td><%=element.city %></td>
+                                                                            <td><span
+                                                                                    class="badge badge-success">Fetched</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Latitue</td>
+                                                                            <td><%=element.lang %></td>
+                                                                            <td><span
+                                                                                    class="badge badge-success">Fetched</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+
+                                                                            <td>Longitude</td>
+                                                                            <td><%=element.lat %></td>
+                                                                            <td><span
+                                                                                    class="badge badge-success">Fetched</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%})%>
+                                </div>
+                                <%}else{%>
+                                No Records
+                                <%}%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!--Row-->
+
+
+
+</div>
+<script>
+    $(function () {
+  $("#datepicker").datepicker({ 
+        autoclose: true, 
+        todayHighlight: true
+  }).datepicker('update', new Date());
+});
+$(function () {
+  $("#datepicker1").datepicker({ 
+        autoclose: true, 
+        todayHighlight: true
+  }).datepicker('update', new Date());
+});
+
+$('#Filter').click(function(){
+    var count=$('#cout').val();
+    var st_date=$('#datepicker').find('input').val()
+    var end_date=$('#datepicker1').find('input').val()
+    $.ajax({
+        url: '/filterRecords',
+        type: 'POST',
+        data: {count: count,
+             st_date: st_date,
+            end_date:end_date,
+            web: 'true'},
+        success:function(result){
+          var html='';
+            result.forEach(element => {
+                html+=`<div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center"
+                                        data-toggle="collapse" data-target="#a`+element._id+`" aria-expanded="false"
+                                aria-controls="a`+element._id+`">
+                                <h6 class="mb-0">
+                                    IP: `+element.ip+`
+
+                                </h6>
+                                <a href="#" class="btn  btn-primary" data-id="`+element._id+`">
+                                    `+moment(element.date).format( 'MMM-DD-YYYY mm:ss')+`</a>
+                            </div>
+
+                            <div id="a`+element._id+`" class="collapse " data-parent="#accordion">
+                                <div class="card-body">
+
+
+
+                                    <div class="card modal-card mb-3">
+
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table align-items-center table-flush">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Country</td>
+                                                                    <td>`+element.country+`</td>
+                                                                    <td><span class="badge badge-success">Fetched</span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>City</td>
+                                                                    <td>`+element.city+`</td>
+                                                                    <td><span class="badge badge-success">Fetched</span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Latitue</td>
+                                                                    <td>`+element.lang+`</td>
+                                                                    <td><span class="badge badge-success">Fetched</span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+
+                                                                    <td>Longitude</td>
+                                                                    <td>`+element.lat+`</td>
+                                                                    <td><span class="badge badge-success">Fetched</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+            });
+            debugger
+            $('#accordion').html(html);            
+            
+        
+        },
+                        error: function(error){
+
+                        }
+                        })
+                        })
+                        </script>
+                        <%- include ./partials/footer.ejs %>
